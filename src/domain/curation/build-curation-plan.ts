@@ -12,19 +12,29 @@ import type {
   CurationPlan,
   LinkRewritePlan,
 } from "./types.js";
+import type { ProviderPlanSuggestions } from "../providers/types.js";
 import { validateVariableDeclarations } from "../variables/validate-variable-declarations.js";
 
 const claudeAdapterOutputPath = "docs/_adapters/claude-code-entry.md";
 const defaultOrbitId = "workspace";
 
-export function buildCurationPlan(input: BuildPlanInput): CurationPlan {
+export function buildCurationPlan(
+  input: BuildPlanInput,
+  providerSuggestions?: ProviderPlanSuggestions,
+): CurationPlan {
   const discoveredPaths = [...input.discovery.discoveredPaths];
   const excludePaths = normalizePathList(input.excludePaths);
   const explicitRollingPaths = normalizePathList(input.rollingPaths);
   const hasRootAgents = discoveredPaths.includes("AGENTS.md");
   const hasRootClaude = discoveredPaths.includes("CLAUDE.md");
+  const providerFileSuggestions = new Map(
+    (providerSuggestions?.fileSuggestions ?? []).map((suggestion) => [
+      suggestion.path,
+      suggestion,
+    ]),
+  );
   const variables = validateVariableDeclarations(
-    input.variables,
+    mergeVariables(input.variables, providerSuggestions),
     discoveredPaths,
   );
   const files = discoveredPaths.map((filePath) =>
@@ -32,6 +42,7 @@ export function buildCurationPlan(input: BuildPlanInput): CurationPlan {
       filePath,
       excludePaths,
       explicitRollingPaths,
+      providerFileSuggestion: providerFileSuggestions.get(filePath),
       hasRootAgents,
       hasRootClaude,
     }),
@@ -42,7 +53,11 @@ export function buildCurationPlan(input: BuildPlanInput): CurationPlan {
   const filePlansByPath = new Map(
     files.map((filePlan) => [filePlan.path, filePlan]),
   );
-  const rewrites = buildRewritePlans(input, filePlansByPath);
+  const rewrites = buildRewritePlans(
+    input,
+    filePlansByPath,
+    providerSuggestions,
+  );
   const plan = curationPlanSchema.parse({
     version: 1,
     source: input.source,
@@ -58,16 +73,25 @@ export function buildCurationPlan(input: BuildPlanInput): CurationPlan {
   return plan;
 }
 
+function mergeVariables(
+  variables: BuildPlanInput["variables"],
+  providerSuggestions?: ProviderPlanSuggestions,
+): BuildPlanInput["variables"] {
+  return [...(variables ?? []), ...(providerSuggestions?.variables ?? [])];
+}
+
 function buildFilePlan({
   filePath,
   excludePaths,
   explicitRollingPaths,
+  providerFileSuggestion,
   hasRootAgents,
   hasRootClaude,
 }: {
   filePath: string;
   excludePaths: Set<string>;
   explicitRollingPaths: Set<string>;
+  providerFileSuggestion?: ProviderPlanSuggestions["fileSuggestions"][number];
   hasRootAgents: boolean;
   hasRootClaude: boolean;
 }): CurationFilePlan {
@@ -85,6 +109,36 @@ function buildFilePlan({
       decision: "rolling_pointer",
       reason: "marked rolling by explicit rule",
       outputPath: buildRollingPointerOutputPath(filePath),
+    };
+  }
+
+  if (providerFileSuggestion?.decision === "drop") {
+    return {
+      path: filePath,
+      decision: "drop",
+      reason: providerFileSuggestion.reason ?? "provider suggested drop",
+    };
+  }
+
+  if (providerFileSuggestion?.decision === "rolling_pointer") {
+    return {
+      path: filePath,
+      decision: "rolling_pointer",
+      reason:
+        providerFileSuggestion.reason ?? "provider suggested rolling pointer",
+      outputPath: buildRollingPointerOutputPath(filePath),
+    };
+  }
+
+  if (providerFileSuggestion?.decision === "keep") {
+    return {
+      path: filePath,
+      decision: "keep",
+      outputPath:
+        hasRootAgents && hasRootClaude && filePath === "CLAUDE.md"
+          ? claudeAdapterOutputPath
+          : filePath,
+      reason: providerFileSuggestion.reason,
     };
   }
 
@@ -136,8 +190,15 @@ function validateOutputPathConflicts(files: CurationFilePlan[]): void {
 function buildRewritePlans(
   input: BuildPlanInput,
   filePlansByPath: Map<string, CurationFilePlan>,
+  providerSuggestions?: ProviderPlanSuggestions,
 ): LinkRewritePlan[] {
   const rewrites: LinkRewritePlan[] = [];
+  const rewriteReasons = new Map(
+    (providerSuggestions?.rewriteSuggestions ?? []).map((rewriteSuggestion) => [
+      `${rewriteSuggestion.from}->${rewriteSuggestion.to}`,
+      rewriteSuggestion.reason,
+    ]),
+  );
 
   for (const edge of input.discovery.edges) {
     const sourcePlan = filePlansByPath.get(edge.from);
@@ -161,6 +222,8 @@ function buildRewritePlans(
       continue;
     }
 
+    const rewriteKey = `${edge.from}->${edge.to}`;
+    const rewriteReason = rewriteReasons.get(rewriteKey);
     rewrites.push({
       from: edge.from,
       to: edge.to,
@@ -170,6 +233,7 @@ function buildRewritePlans(
         sourcePlan.outputPath,
         targetPlan.outputPath,
       ),
+      reason: rewriteReason,
     });
   }
 

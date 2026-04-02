@@ -70,4 +70,5 @@ npm test
 - `discoverSource` 已能从 Git 仓库根 `AGENTS.md` / `CLAUDE.md` 出发生成稳定 discovery graph
 - `buildPlan` 已能生成确定性的 curation plan，包含 keep / drop / rolling / rewrite / variable 决策
 - `materializeTemplate` 已能从 approved plan 写出 installable harness template tree
-- 后续可以在这个基线上继续推进 provider integration
+- `buildPlan` 已能通过可选 provider adapter 吸收结构化建议，并在 provider 失效或响应非法时回退到确定性路径
+- 后续可以在这个基线上继续推进 live provider wiring 和 bootstrap workflow

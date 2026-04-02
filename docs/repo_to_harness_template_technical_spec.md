@@ -253,6 +253,7 @@ V1 的 `buildPlan` 公开入口默认支持：
 - `excludePaths`
 - `rollingPaths`
 - `variables`
+- `provider`
 
 并在返回前通过本地 schema 校验 plan 结构。
 
@@ -419,6 +420,39 @@ provider adapter 只负责：
 - file system writes
 - final manifest writing
 - repo path validation
+
+当前 Phase 4 行为：
+
+- `buildPlan` 会先生成 deterministic draft plan；
+- 若传入 `provider`，则 provider 只接收：
+  - `source`
+  - `discovery`
+  - `deterministicPlan`
+  - discovered Markdown file contents
+- provider 返回的建议必须通过本地 schema 与语义校验后才能重新进入 `buildPlan`
+- provider 失效、抛错或返回非法结构时，系统回退到 deterministic plan
+- provider 建议当前只影响：
+  - file decision adjustments
+  - rewrite reasons
+  - variable suggestions
+
+建议响应形状：
+
+```ts
+type ProviderPlanSuggestions = {
+  fileSuggestions: Array<{
+    path: string;
+    decision: "keep" | "drop" | "rolling_pointer";
+    reason?: string;
+  }>;
+  rewriteSuggestions: Array<{
+    from: string;
+    to: string;
+    reason: string;
+  }>;
+  variables: VariableDeclaration[];
+};
+```
 
 ## 9. 与 Orbit / `harness install` 的兼容约束
 

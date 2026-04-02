@@ -1,4 +1,5 @@
 import type { DiscoveryGraph, SourceSnapshot } from "../source/types.js";
+import type { PlanSuggestionProvider } from "../providers/types.js";
 
 export type CurationDecision = "keep" | "drop" | "rolling_pointer";
 
@@ -26,6 +27,7 @@ export type LinkRewritePlan = {
   sourceOutputPath: string;
   targetOutputPath: string;
   replacementHref: string;
+  reason?: string;
 };
 
 export type CurationPlan = {
@@ -48,4 +50,5 @@ export type BuildPlanInput = {
   excludePaths?: string[];
   rollingPaths?: string[];
   variables?: VariableDeclaration[];
+  provider?: PlanSuggestionProvider;
 };

@@ -24,6 +24,7 @@ export const linkRewritePlanSchema = z.object({
   sourceOutputPath: z.string().min(1),
   targetOutputPath: z.string().min(1),
   replacementHref: z.string().min(1),
+  reason: z.string().min(1).optional(),
 });
 
 export const sourceSnapshotSchema = z.object({

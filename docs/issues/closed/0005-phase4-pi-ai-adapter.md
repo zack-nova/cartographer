@@ -1,6 +1,6 @@
 # ISSUE-0005 Phase 4 Pi-AI Adapter
 
-- Status: open
+- Status: closed
 - Priority: medium
 - Owner:
 - Created: 2026-04-02
@@ -25,6 +25,19 @@
 - provider 失效时确定性路径仍可工作
 - provider 差异不会改变 materialize 合同
 - provider 不会绕过本地校验直接写文件
+
+## Resolution
+
+- 已实现 provider adapter 接口和 `createPiAiPlanSuggestionProvider`
+- 已实现 prompt assembly，把 deterministic plan 与 Markdown 文件上下文送入 provider
+- 已实现 provider response schema 和语义校验
+- 已实现 provider 建议对 `buildPlan` 的受控合并：
+  - file decision adjustments
+  - rewrite reasons
+  - variable suggestions
+- 已实现 provider unavailable / invalid response 回退到 deterministic plan
+- provider 仍然无法直接触达 materialize 或文件写入路径
+- 已通过单元测试和集成测试覆盖关键 Phase 4 场景
 
 ## Notes
 
