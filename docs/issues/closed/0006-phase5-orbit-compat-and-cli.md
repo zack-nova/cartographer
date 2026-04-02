@@ -34,8 +34,10 @@
 - 已实现显式 review gate：默认返回 draft plan，只有 `autoApprove=true` 才会落盘
 - 已实现 harness template branch 与 orbit template branch 的前置拒绝
 - 已补充 bootstrap 端到端集成测试，覆盖 draft path、approved path 和 source branch routing
+- 已补充开发期薄命令 `scripts/dev.ts`，暴露 `discover` / `build-plan` / `materialize` / `bootstrap`
+- 已补充 dev command 集成测试，覆盖 help、`discover --json` 和 `bootstrap --json`
 - 已更新文档，使 library-first Phase 5 行为与当前实现一致
-- 正式 CLI 仍然保持后置；当前没有冻结命令行合同
+- 正式 CLI 仍然保持后置；当前只冻结开发期命令的最小行为，不冻结正式命令行合同
 
 ## Notes
 

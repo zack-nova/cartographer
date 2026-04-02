@@ -58,7 +58,14 @@ npm test
 - `materializeTemplate`
 - `bootstrapRepository`
 
-如果后续补 CLI，建议只包一层很薄的 Node CLI，不用 React，不把 `pi-ai` 当命令框架。
+当前已经提供开发期薄命令壳：
+
+- `npm run dev -- discover --repo <path> --json`
+- `npm run dev -- build-plan --repo <path> --json`
+- `npm run dev -- materialize --plan <path> --output <path> --json`
+- `npm run dev -- bootstrap --repo <path> --output <path> --auto-approve --json`
+
+这层命令壳只复用现有 library workflow，定位是开发期手工驱动和集成验证，不是正式产品 CLI。正式 CLI 仍然显式后置，后续如果冻结命令行合同，建议只包一层很薄的 Node CLI，不用 React，不把 `pi-ai` 当命令框架。
 
 ## 仓库状态
 
@@ -72,4 +79,5 @@ npm test
 - `materializeTemplate` 已能从 approved plan 写出 installable harness template tree
 - `buildPlan` 已能通过可选 provider adapter 吸收结构化建议，并在 provider 失效或响应非法时回退到确定性路径
 - `bootstrapRepository` 已能串起 end-to-end library workflow，并在 plain/template branch 之间做分流
+- 开发期 `scripts/dev.ts` 已暴露 `discover` / `build-plan` / `materialize` / `bootstrap` 四个薄命令
 - 正式 CLI 仍然显式后置，当前继续坚持 library-first

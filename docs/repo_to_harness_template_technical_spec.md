@@ -180,7 +180,10 @@ type MaterializeTemplateResult = {
 
 ```ts
 type BootstrapRepositoryResult = {
-  sourceType: "plain_branch" | "harness_template_branch" | "orbit_template_branch";
+  sourceType:
+    | "plain_branch"
+    | "harness_template_branch"
+    | "orbit_template_branch";
   discovery: DiscoveryGraph;
   plan: CurationPlan;
   materialized?: MaterializeTemplateResult;
@@ -355,8 +358,7 @@ template:
   includes_root_agents: <bool>
 members:
   - orbit_id: workspace
-variables:
-  ...
+variables: ...
 ```
 
 ### `.orbit/orbits/workspace.yaml`
@@ -407,6 +409,20 @@ docs/
 
 - `scripts/dev.ts`
 
+当前已落地的开发期命令：
+
+- `discover`
+- `build-plan`
+- `materialize`
+- `bootstrap`
+
+约束：
+
+- 只作为开发期手工驱动和集成验证入口
+- 直接调用现有 library 公开接口
+- `--json` 时输出机器可读结果
+- 默认文本输出只提供稳定摘要，不扩展成正式产品 UX
+
 正式 CLI 后置。
 
 若后续补 CLI，约束如下：
@@ -422,6 +438,7 @@ docs/
 - `bootstrapRepository` 默认只返回 draft plan，不自动落盘
 - 只有显式 `autoApprove=true` 时才会进入 materialize
 - `autoApprove=true` 时必须提供 `outputDir`
+- `scripts/dev.ts` 已提供 `discover` / `build-plan` / `materialize` / `bootstrap` 四个开发期薄命令
 - 正式 CLI 仍然保持后置，不在当前阶段冻结命令行合同
 
 ## 8. Provider 边界
