@@ -1,7 +1,11 @@
+import { bootstrapRepository as bootstrapRepositoryApp } from "./app/bootstrap-repository.js";
 import { buildPlan as buildPlanApp } from "./app/build-plan.js";
 import { discoverSource as discoverSourceApp } from "./app/discover-source.js";
 import { materializeTemplate as materializeTemplateApp } from "./app/materialize-template.js";
-import { rejectNotImplemented } from "./errors/not-implemented.js";
+import type {
+  BootstrapRepositoryInput,
+  BootstrapRepositoryResult,
+} from "./domain/bootstrap/types.js";
 import type { BuildPlanInput, CurationPlan } from "./domain/curation/types.js";
 import type {
   MaterializeTemplateInput,
@@ -28,6 +32,8 @@ export async function materializeTemplate(
   return materializeTemplateApp(input);
 }
 
-export function bootstrapRepository(): Promise<never> {
-  return rejectNotImplemented("bootstrapRepository");
+export async function bootstrapRepository(
+  input: BootstrapRepositoryInput,
+): Promise<BootstrapRepositoryResult> {
+  return bootstrapRepositoryApp(input);
 }

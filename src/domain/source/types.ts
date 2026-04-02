@@ -27,3 +27,8 @@ export type DiscoverSourceResult = {
   source: SourceSnapshot;
   discovery: DiscoveryGraph;
 };
+
+export type SourceBranchType =
+  | "plain_branch"
+  | "harness_template_branch"
+  | "orbit_template_branch";

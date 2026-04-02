@@ -176,6 +176,17 @@ type MaterializeTemplateResult = {
 };
 ```
 
+### 5.5 Bootstrap Result
+
+```ts
+type BootstrapRepositoryResult = {
+  sourceType: "plain_branch" | "harness_template_branch" | "orbit_template_branch";
+  discovery: DiscoveryGraph;
+  plan: CurationPlan;
+  materialized?: MaterializeTemplateResult;
+};
+```
+
 ## 6. 关键流程
 
 ## 6.1 Snapshot
@@ -406,6 +417,13 @@ docs/
 - `materialize` 默认只接受 `status=approved` 的 plan
 - `bootstrap` 可以串联前述阶段，但仍应保留 review gate
 
+当前 Phase 5 行为：
+
+- `bootstrapRepository` 默认只返回 draft plan，不自动落盘
+- 只有显式 `autoApprove=true` 时才会进入 materialize
+- `autoApprove=true` 时必须提供 `outputDir`
+- 正式 CLI 仍然保持后置，不在当前阶段冻结命令行合同
+
 ## 8. Provider 边界
 
 provider adapter 只负责：
@@ -465,6 +483,14 @@ type ProviderPlanSuggestions = {
 5. 根 `AGENTS.md` 的 whole-file 语义和 marker strip 行为必须与现有 harness 逻辑兼容；
 6. plan、result、provider payload 都要保持语言无关的结构化协议，方便未来 Go 侧调用或重实现；
 7. 不要让 Node runtime 成为 Orbit 核心内核的隐式强依赖，首次集成更适合 helper-process 或独立工具模式。
+
+当前 Phase 5 行为：
+
+- `bootstrapRepository` 会先检查 source ref 是否已经包含 `.harness/template.yaml`
+- 若存在，则视为 harness template branch，直接拒绝进入 Cartographer 转化链
+- `bootstrapRepository` 也会检查 `.orbit/template.yaml`
+- 若存在，则视为 orbit template branch，直接拒绝进入 Cartographer 转化链
+- 只有未命中上述 marker 的 source ref 才会被视为 `plain_branch`
 
 ## 10. 测试要求
 

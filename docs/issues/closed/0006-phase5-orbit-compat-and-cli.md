@@ -1,6 +1,6 @@
 # ISSUE-0006 Phase 5 Orbit Compat And Optional CLI
 
-- Status: open
+- Status: closed
 - Priority: medium
 - Owner:
 - Created: 2026-04-02
@@ -27,6 +27,15 @@
 - library 输出 contract 有稳定测试
 - 若补 CLI，CLI 输出 contract 也有稳定测试
 - 文档与实际行为保持一致
+
+## Resolution
+
+- 已实现 `bootstrapRepository` 公开入口，串起 `discoverSource -> buildPlan -> materializeTemplate`
+- 已实现显式 review gate：默认返回 draft plan，只有 `autoApprove=true` 才会落盘
+- 已实现 harness template branch 与 orbit template branch 的前置拒绝
+- 已补充 bootstrap 端到端集成测试，覆盖 draft path、approved path 和 source branch routing
+- 已更新文档，使 library-first Phase 5 行为与当前实现一致
+- 正式 CLI 仍然保持后置；当前没有冻结命令行合同
 
 ## Notes
 
