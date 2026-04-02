@@ -170,13 +170,14 @@ materialize 输出不再依赖 provider 原始响应，而是完全依赖经 sch
 
 1. 解析本地路径或远程 Git repo locator
 2. 解析默认分支或显式 ref
-3. 获取临时工作副本
+3. 建立只读的 commit snapshot
 4. 记录最终 commit 和 root dir
 
 约束：
 
 - 不直接改源仓库
 - 不把 snapshot 目录当输出目录复用
+- V1 可以通过只读 Git object 读取来实现 snapshot；不强制要求 temp checkout
 
 ## 6.2 Discovery
 

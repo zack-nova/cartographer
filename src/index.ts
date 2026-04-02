@@ -1,7 +1,14 @@
+import { discoverSource as discoverSourceApp } from "./app/discover-source.js";
 import { rejectNotImplemented } from "./errors/not-implemented.js";
+import type {
+  DiscoverSourceInput,
+  DiscoverSourceResult,
+} from "./domain/source/types.js";
 
-export function discoverSource(): Promise<never> {
-  return rejectNotImplemented("discoverSource");
+export async function discoverSource(
+  input: DiscoverSourceInput,
+): Promise<DiscoverSourceResult> {
+  return discoverSourceApp(input);
 }
 
 export function buildPlan(): Promise<never> {
