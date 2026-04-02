@@ -13,14 +13,34 @@ export function resolveRepoRelativeLinkTarget({
   const baseDir = fromDir === "." ? "" : fromDir;
   const resolvedPath = path.posix.normalize(path.posix.join(baseDir, href));
 
+  return normalizeRepoRelativePath(resolvedPath);
+}
+
+export function normalizeRepoRelativePath(filePath: string): string | null {
+  const normalizedPath = path.posix.normalize(filePath.replaceAll("\\", "/"));
+
   if (
-    resolvedPath.length === 0 ||
-    resolvedPath === "." ||
-    resolvedPath.startsWith("../") ||
-    path.posix.isAbsolute(resolvedPath)
+    normalizedPath.length === 0 ||
+    normalizedPath === "." ||
+    normalizedPath === ".." ||
+    normalizedPath.startsWith("../") ||
+    path.posix.isAbsolute(normalizedPath)
   ) {
     return null;
   }
 
-  return resolvedPath;
+  return normalizedPath;
+}
+
+export function buildRelativeOutputLink(
+  fromOutputPath: string,
+  targetOutputPath: string,
+): string {
+  const fromDir = path.posix.dirname(fromOutputPath);
+  const relativePath = path.posix.relative(
+    fromDir === "." ? "" : fromDir,
+    targetOutputPath,
+  );
+
+  return relativePath || path.posix.basename(targetOutputPath);
 }

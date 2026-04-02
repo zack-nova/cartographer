@@ -1,5 +1,7 @@
+import { buildPlan as buildPlanApp } from "./app/build-plan.js";
 import { discoverSource as discoverSourceApp } from "./app/discover-source.js";
 import { rejectNotImplemented } from "./errors/not-implemented.js";
+import type { BuildPlanInput, CurationPlan } from "./domain/curation/types.js";
 import type {
   DiscoverSourceInput,
   DiscoverSourceResult,
@@ -11,8 +13,8 @@ export async function discoverSource(
   return discoverSourceApp(input);
 }
 
-export function buildPlan(): Promise<never> {
-  return rejectNotImplemented("buildPlan");
+export async function buildPlan(input: BuildPlanInput): Promise<CurationPlan> {
+  return buildPlanApp(input);
 }
 
 export function materializeTemplate(): Promise<never> {

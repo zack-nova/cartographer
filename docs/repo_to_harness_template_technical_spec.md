@@ -137,6 +137,7 @@ type DiscoveryGraph = {
 type CurationPlan = {
   version: 1;
   source: SourceSnapshot;
+  discoveredPaths: string[];
   harnessId: string;
   orbitId: string;
   status: "draft" | "approved";
@@ -144,8 +145,14 @@ type CurationPlan = {
     path: string;
     decision: "keep" | "drop" | "rolling_pointer";
     reason?: string;
-    rewrittenPath?: string;
     outputPath?: string;
+  }>;
+  rewrites: Array<{
+    from: string;
+    to: string;
+    sourceOutputPath: string;
+    targetOutputPath: string;
+    replacementHref: string;
   }>;
   variables: Array<{
     name: string;
@@ -231,6 +238,16 @@ provider 可提供：
 - path 存在性校验
 - 冲突校验
 - 保留输出路径冲突校验
+
+V1 的 `buildPlan` 公开入口默认支持：
+
+- `harnessId` override
+- `orbitId` override
+- `excludePaths`
+- `rollingPaths`
+- `variables`
+
+并在返回前通过本地 schema 校验 plan 结构。
 
 ## 6.4 Rolling Pointer Strategy
 

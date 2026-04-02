@@ -68,4 +68,5 @@ npm test
 - `vitest`、`eslint`、`prettier`、`tsc` 已接入
 - library-first 公开入口和最薄开发脚本已落地
 - `discoverSource` 已能从 Git 仓库根 `AGENTS.md` / `CLAUDE.md` 出发生成稳定 discovery graph
-- 后续可以在这个基线上继续推进 curation / materialize
+- `buildPlan` 已能生成确定性的 curation plan，包含 keep / drop / rolling / rewrite / variable 决策
+- 后续可以在这个基线上继续推进 materialize
