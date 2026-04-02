@@ -169,6 +169,13 @@ type CurationPlan = {
 
 materialize 输出不再依赖 provider 原始响应，而是完全依赖经 schema 校验后的 plan。
 
+```ts
+type MaterializeTemplateResult = {
+  outputDir: string;
+  writtenPaths: string[];
+};
+```
+
 ## 6. 关键流程
 
 ## 6.1 Snapshot
@@ -308,10 +315,17 @@ materialize 只应用 plan 中显式记录的替换：
 5. 在 `.harness/template.yaml` 中写 `includes_root_agents=true`
 
 若只有根 `CLAUDE.md` 而没有根 `AGENTS.md`，则允许用其内容生成输出侧唯一根 `AGENTS.md`。
+此时 `.harness/template.yaml` 中的 `includes_root_agents=false`，因为 source root `AGENTS.md` 并不存在。
 
 ## 6.8 Materialize
 
 materialize 负责生成完整 harness template tree。
+
+入口约束：
+
+- 默认只接受 `status=approved` 的 plan
+- 可以接收 `createdAt` override 以支持稳定测试和可重复输出
+- 返回 `writtenPaths`，用于上层脚本或后续 CLI 输出稳定摘要
 
 ### `.harness/template.yaml`
 
