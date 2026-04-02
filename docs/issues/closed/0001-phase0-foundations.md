@@ -1,6 +1,6 @@
 # ISSUE-0001 Phase 0 Foundations
 
-- Status: open
+- Status: closed
 - Priority: high
 - Owner:
 - Created: 2026-04-02
@@ -36,6 +36,14 @@
 - 可以运行基础 lint / typecheck / test 脚本
 - 目录结构与 `docs/repo_to_harness_template_technical_spec.md` 对齐
 - 基础开发脚本可用于后续手工驱动阶段性能力
+
+## Resolution
+
+- 已初始化 `TypeScript + Node.js` 工程骨架
+- 已接入 `vitest`、`eslint`、`prettier`、`tsc`
+- 已落地 `discoverSource`、`buildPlan`、`materializeTemplate`、`bootstrapRepository` 的稳定占位入口
+- 已补充 `scripts/dev.ts` 作为 Phase 0 手工驱动入口
+- 已通过基础测试、lint、typecheck、format 校验
 
 ## Notes
 
